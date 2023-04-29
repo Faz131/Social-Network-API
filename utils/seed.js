@@ -1,51 +1,46 @@
 const connection = require('../config/connection');
-const user = require('../models/Users')
-const { getRandomName, getRandomAssignments } = require('./data');
+const { Users, Thoughts } = require('../models');
+const {
+  getRandomName,
+  getRandomComments,
+  getRandomPost,
+  genRandomIndex,
+} = require('./data');
 
-connection.on('error', (err) => err);
+// Start the seeding runtime timer
+console.time('seeding');
 
+// Creates a connection to mongodb
 connection.once('open', async () => {
-  console.log('connected');
+  // Delete the entries in the collection
+  await Post.deleteMany({});
+  await Comment.deleteMany({});
 
-  // Drop existing courses
-  await Course.deleteMany({});
+  // Empty arrays for randomly generated posts and comments
+  const comments = [...getRandomComments(10)];
+  const posts = [];
 
-  // Drop existing students
-  await Student.deleteMany({});
-
-  // Create empty array to hold the students
-  const students = [];
-
-  // Loop 20 times -- add students to the students array
-  for (let i = 0; i < 20; i++) {
-    // Get some random assignment objects using a helper function that we imported from ./data
-    const assignments = getRandomAssignments(20);
-
-    const fullName = getRandomName();
-    const first = fullName.split(' ')[0];
-    const last = fullName.split(' ')[1];
-    const github = `${first}${Math.floor(Math.random() * (99 - 18 + 1) + 18)}`;
-
-    students.push({
-      first,
-      last,
-      github,
-      assignments,
+  // Makes comments array
+  const makePost = (text) => {
+    posts.push({
+      text,
+      username: getRandomName().split(' ')[0],
+      comments: [comments[genRandomIndex(comments)]._id],
     });
-  }
+  };
 
-  // Add students to the collection and await the results
-  await Student.collection.insertMany(students);
+  // Wait for the comments to be inserted into the database
+  await Comment.collection.insertMany(comments);
 
-  // Add courses to the collection and await the results
-  await Course.collection.insertOne({
-    courseName: 'UCLA',
-    inPerson: false,
-    students: [...students],
-  });
+  // For each of the comments that exist, make a random post of 10 words
+  comments.forEach(() => makePost(getRandomPost(10)));
 
-  // Log out the seed data to indicate what should appear in the database
-  console.table(students);
-  console.info('Seeding complete! 🌱');
+  // Wait for the posts array to be inserted into the database
+  await Post.collection.insertMany(posts);
+
+  // Log out a pretty table for comments and posts
+  console.table(comments);
+  console.table(posts);
+  console.timeEnd('seeding complete 🌱');
   process.exit(0);
 });

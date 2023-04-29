@@ -26,4 +26,4 @@ const thoughtSchema = new Schema(
     }
 );
 
-module.exports = assignmentSchema;
+module.exports = thoughtSchema;
