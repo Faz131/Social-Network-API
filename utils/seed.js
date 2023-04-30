@@ -1,10 +1,10 @@
 const connection = require('../config/connection');
-const { Users, Thoughts } = require('../models');
+const { Users, Thought } = require('../models');
 const {
-  getRandomName,
-  getRandomComments,
-  getRandomPost,
-  genRandomIndex,
+  getRandomUsers,
+  getRandomThoughts,
+  // getRandomPost,
+  // genRandomIndex,
 } = require('./data');
 
 // Start the seeding runtime timer
@@ -12,17 +12,17 @@ console.time('seeding');
 
 // Creates a connection to mongodb
 connection.once('open', async () => {
-  // Delete the entries in the collection
-  await Post.deleteMany({});
-  await Comment.deleteMany({});
+  // // Delete the entries in the collection
+  // await Users.deleteMany({});
+  // await Thought.deleteMany({});
 
   // Empty arrays for randomly generated posts and comments
-  const comments = [...getRandomComments(10)];
+  const thought = [...getRandomThoughts(10)];
   const posts = [];
 
   // Makes comments array
-  const makePost = (text) => {
-    posts.push({
+  const makeThoughts = (text) => {
+    thought.push({
       text,
       username: getRandomName().split(' ')[0],
       comments: [comments[genRandomIndex(comments)]._id],
