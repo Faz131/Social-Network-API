@@ -1,11 +1,11 @@
-const { User, Thought } = require('../models');
+const { Users, Thought } = require('../models');
 
 module.exports = {
     // Get all users
     async getUsers(req, res) {
         try {
-            const users = await User.find();
-            res.json(users);
+            const getUser = await Users.find({});
+            res.json(getUser);
         } catch (err) {
             res.status(500).json(err);
         }
@@ -13,14 +13,14 @@ module.exports = {
     // Get a single user
     async getSingleUser(req, res) {
         try {
-            const user = await User.findOne({ _id: req.params.userId })
+            const getSingleUser = await Users.findOne({ _id: req.params.userId })
                 .select('-__v');
 
-            if (!user) {
+            if (!getSingleUser) {
                 return res.status(404).json({ message: 'No user with that ID' });
             }
 
-            res.json(user);
+            res.json(getSingleUser);
         } catch (err) {
             res.status(500).json(err);
         }
@@ -28,8 +28,8 @@ module.exports = {
     // create a new user
     async createUser(req, res) {
         try {
-            const user = await User.create(req.body);
-            res.json(user);
+            const createUser = await Users.create(req.body);
+            res.json(createUser);
         } catch (err) {
             res.status(500).json(err);
         }
@@ -37,13 +37,13 @@ module.exports = {
     // Delete a user and associated apps
     async deleteUser(req, res) {
         try {
-            const user = await User.findOneAndDelete({ _id: req.params.userId });
+            const deleteUser = await Users.findOneAndDelete({ _id: req.params.userId });
 
-            if (!user) {
+            if (!deleteUser) {
                 return res.status(404).json({ message: 'No user with that ID' });
             }
 
-            await Thought.deleteMany({ _id: { $in: user.thoughts } });
+            await thought.deleteMany({ _id: { $in: user.thoughts } });
             res.json({ message: 'User and thoughts deleted!' })
         } catch (err) {
             res.status(500).json(err);

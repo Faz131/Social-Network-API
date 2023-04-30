@@ -4,8 +4,8 @@ module.exports = {
     // Get all thoughts
     async getThoughts(req, res) {
         try {
-            const thought = await Thought.find();
-            res.json(thought)
+            const thoughts = await Thought.find();
+            res.json(thoughts)
         } catch (err) {
             res.status(500).json(err);
         }
@@ -13,13 +13,13 @@ module.exports = {
     // Get a single thought
     async getSingleThought(req, res) {
         try {
-            const thought = await Thought.findOne({ _id: req.params.thoughtId });
+            const thoughts = await Thought.findOne({ _id: req.params.thoughtId });
 
-            if (!thought) {
+            if (!thoughts) {
                 return res.status(404).json({ message: 'No thought with that ID' });
             }
 
-            res.json(thought);
+            res.json(thoughts);
         } catch (err) {
             res.status(500).json(err);
         }
@@ -28,10 +28,10 @@ module.exports = {
     async createThought(req, res) {
 
         try {
-            const thought = await Thought.create(req.body);
+            const thoughts = await Thought.create(req.body);
             const user = await Users.findOneAndUpdate(
                 { _id: req.body.userId },
-                { $addToSet: { thought: thought._id } },
+                { $addToSet: { thought: Thought._id } },
                 { new: true }
             );
 
