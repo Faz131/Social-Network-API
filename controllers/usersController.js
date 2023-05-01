@@ -34,7 +34,7 @@ module.exports = {
             res.status(500).json(err);
         }
     },
-    // Delete a user and associated apps
+    // Delete a user and associated thought
     async deleteUser(req, res) {
         try {
             const deleteUser = await Users.findOneAndDelete({ _id: req.params.userId });
@@ -43,7 +43,7 @@ module.exports = {
                 return res.status(404).json({ message: 'No user with that ID' });
             }
 
-            await thought.deleteMany({ _id: { $in: user.thoughts } });
+            await Thought.deleteMany({ _id: { $in: Users.thoughts } });
             res.json({ message: 'User and thoughts deleted!' })
         } catch (err) {
             res.status(500).json(err);
