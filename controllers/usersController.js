@@ -4,7 +4,8 @@ module.exports = {
     // Get all users
     async getUsers(req, res) {
         try {
-            const getUser = await Users.find({});
+            const getUser = await Users.find({})
+                .select('-__v');
             res.json(getUser);
         } catch (err) {
             res.status(500).json(err);
@@ -64,6 +65,16 @@ module.exports = {
             }
 
             res.json(updateUsers);
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    },
+    // router.route('/users/:usersId/friends/:friendId').post(addFriend);
+    async addFriend(req, res) {
+        try {
+            const data = await Users.findOneAndUpdate({ _id: req.params.userId }, { $addToSet: { friends: req.params.friendId } }, { new: true });
+            res.json(data);
+
         } catch (err) {
             res.status(500).json(err);
         }
